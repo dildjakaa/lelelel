@@ -56,7 +56,7 @@ class GameUI:
             parent=camera.ui,
             model='quad',
             scale=(0.3, 0.05),
-            color=color.dark_red,
+            color=color.red,
             position=(-0.7, -0.4, 0)
         )
         
@@ -85,7 +85,7 @@ class GameUI:
             parent=camera.ui,
             model='quad',
             scale=(0.2, 0.05),
-            color=color.dark_gray,
+            color=color.gray,
             position=(0.6, -0.4, 0)
         )
         
@@ -114,7 +114,7 @@ class GameUI:
             parent=camera.ui,
             model='quad',
             scale=(0.2, 0.2),
-            color=color.dark_gray,
+            color=color.gray,
             position=(0.7, 0.7, 0)
         )
         

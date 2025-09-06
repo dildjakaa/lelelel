@@ -1,7 +1,8 @@
-<<<<<<< HEAD
 # 3D Shooter Game Project
 
-This project contains both a Python 3D shooter game using Ursina engine and a Node.js multiplayer server for Render.com deployment.
+This project contains both a Python 3D shooter game using Ursina engine and a Node.js multiplayer server deployed on Render.com.
+
+🌐 **Live Server**: [https://lelelel.onrender.com/](https://lelelel.onrender.com/)
 
 ## Project Structure
 
@@ -24,6 +25,8 @@ game/
 │   │   ├── player.js     # Player management
 │   │   ├── room.js       # Room/lobby system
 │   │   └── anti-cheat.js # Anti-cheat measures
+│   ├── public/
+│   │   └── index.html    # Web client
 │   ├── package.json      # Node.js dependencies
 │   ├── Dockerfile        # Docker configuration
 │   └── .env.example      # Environment variables template
@@ -36,7 +39,12 @@ game/
 1. Install dependencies: `pip install -r python_game/requirements.txt`
 2. Run the game: `python python_game/main.py`
 
-### Node.js Server
+### Web Client
+1. Open [https://lelelel.onrender.com/](https://lelelel.onrender.com/) in your browser
+2. Enter your username
+3. Click "Connect" to join the multiplayer server
+
+### Local Server Development
 1. Install dependencies: `cd server && npm install`
 2. Copy `.env.example` to `.env` and configure
 3. Run server: `npm start`
@@ -51,12 +59,10 @@ game/
 - Modular weapon system
 - Sound effects and particle systems
 
-### Node.js Server
+### Node.js Server (Deployed on Render.com)
 - Real-time multiplayer with Socket.io
 - Player authentication and session management
 - Room/lobby system
 - Anti-cheat validation
-- Optimized for Render.com deployment
-=======
-# lelelel
->>>>>>> 7b6604799a7c15f1d82b888b4274e60633af931c
+- Web client interface
+- Production-ready deployment

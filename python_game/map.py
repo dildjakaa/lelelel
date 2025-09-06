@@ -245,11 +245,11 @@ class GameMap:
             )
         elif object_type == 'barrel':
             obj = Entity(
-                model='cylinder',
+                model='cube',
                 scale=(1, 2, 1),
                 position=(x, 1, z),
-                color=color.dark_gray,
-                collider='cylinder'
+                color=color.gray,
+                collider='box'
             )
         elif object_type == 'box':
             obj = Entity(
@@ -261,11 +261,11 @@ class GameMap:
             )
         else:  # pillar
             obj = Entity(
-                model='cylinder',
+                model='cube',
                 scale=(0.8, 3, 0.8),
                 position=(x, 1.5, z),
                 color=color.light_gray,
-                collider='cylinder'
+                collider='box'
             )
             
         self.cover_objects.append(obj)

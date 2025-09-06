@@ -44,12 +44,3 @@
     "node": ">=18.0.0",
     "npm": ">=8.0.0"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/yourusername/3d-shooter-multiplayer"
-  },
-  "bugs": {
-    "url": "https://github.com/yourusername/3d-shooter-multiplayer/issues"
-  },
-  "homepage": "https://github.com/yourusername/3d-shooter-multiplayer#readme"
-}

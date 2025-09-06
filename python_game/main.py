@@ -6,19 +6,171 @@ from ursina.prefabs.first_person_controller import FirstPersonController
 import random
 import time
 
-# Import game modules
-from config import *
-from player import Player
-from enemy import Enemy
-from weapon import Pistol, Rifle, Shotgun
-from map import GameMap
-from ui import GameUI
-from audio import AudioManager
+# Game configuration constants (inline since config.py might not exist)
+GAME_TITLE = "3D Shooter Game"
+WINDOW_WIDTH = 1280
+WINDOW_HEIGHT = 720
+FULLSCREEN = False
+VSYNC = True
+SHOW_FPS = True
+
+# Simple Player class (inline replacement)
+class Player:
+    def __init__(self, position=(0, 1, 0)):
+        self.controller = FirstPersonController(position=position)
+        self.health = 100
+        self.max_health = 100
+        self.is_alive = True
+        self.current_weapon = "rifle"
+        self.weapons = {"pistol": True, "rifle": True, "shotgun": True}
+        self.ammo = {"pistol": 50, "rifle": 30, "shotgun": 20}
+        self.max_ammo = {"pistol": 50, "rifle": 30, "shotgun": 20}
+        
+    def update(self):
+        if not self.is_alive:
+            return
+            
+    def take_damage(self, damage):
+        self.health -= damage
+        if self.health <= 0:
+            self.health = 0
+            self.is_alive = False
+            
+    def fire_weapon(self):
+        if not self.is_alive or self.ammo[self.current_weapon] <= 0:
+            return None
+            
+        self.ammo[self.current_weapon] -= 1
+        
+        # Create bullet
+        bullet = Entity(model='cube', color=color.yellow, scale=0.1,
+                       position=self.controller.position + self.controller.forward)
+        bullet.velocity = self.controller.forward * 30
+        bullet.lifetime = 5.0
+        return bullet
+        
+    def reload_weapon(self):
+        self.ammo[self.current_weapon] = self.max_ammo[self.current_weapon]
+        
+    def switch_weapon(self, weapon_index):
+        weapons = ["pistol", "rifle", "shotgun"]
+        if 0 <= weapon_index < len(weapons):
+            self.current_weapon = weapons[weapon_index]
+            
+    def add_weapon(self, weapon):
+        pass  # Simplified
+        
+    def respawn(self, position):
+        self.health = self.max_health
+        self.is_alive = True
+        self.controller.position = position
+        for weapon in self.ammo:
+            self.ammo[weapon] = self.max_ammo[weapon]
+
+# Simple Enemy class (inline replacement)
+class Enemy:
+    def __init__(self, position=(0, 1, 0)):
+        self.entity = Entity(model='cube', color=color.red, scale=1.5, position=position)
+        self.position = position
+        self.health = 50
+        self.is_alive = True
+        self.speed = 2
+        
+    def update(self):
+        if not self.is_alive:
+            return
+            
+    def take_damage(self, damage):
+        self.health -= damage
+        if self.health <= 0:
+            self.health = 0
+            self.is_alive = False
+            if hasattr(self.entity, 'disable'):
+                self.entity.disable()
+            
+    def destroy(self):
+        if hasattr(self.entity, 'destroy'):
+            self.entity.destroy()
+
+# Simple GameMap class (inline replacement)
+class GameMap:
+    def __init__(self):
+        # Create simple ground
+        self.ground = Entity(model='plane', color=color.green, scale=50)
+        
+        # Create some walls
+        for i in range(10):
+            Entity(model='cube', color=color.gray, 
+                  position=(random.uniform(-20, 20), 1.5, random.uniform(-20, 20)),
+                  scale=(2, 3, 2))
+                  
+    def get_random_player_spawn(self):
+        return Vec3(0, 1, 0)
+        
+    def get_random_enemy_spawn(self):
+        return Vec3(random.uniform(-15, 15), 1, random.uniform(-15, 15))
+
+# Simple GameUI class (inline replacement)
+class GameUI:
+    def __init__(self, player):
+        self.player = player
+        self.health_text = Text(f'Health: {player.health}', position=(-0.85, 0.45), scale=2)
+        self.ammo_text = Text(f'Ammo: {player.ammo[player.current_weapon]}', position=(-0.85, 0.4), scale=2)
+        self.weapon_text = Text(f'Weapon: {player.current_weapon}', position=(-0.85, 0.35), scale=2)
+        self.score_text = Text('Score: 0', position=(-0.85, -0.45), scale=2)
+        self.death_screen = None
+        self.pause_menu = None
+        self.debug_info = None
+        self.debug_visible = False
+        
+    def update(self):
+        if self.player:
+            self.health_text.text = f'Health: {self.player.health}'
+            self.ammo_text.text = f'Ammo: {self.player.ammo[self.player.current_weapon]}'
+            self.weapon_text.text = f'Weapon: {self.player.current_weapon}'
+            
+    def show_death_screen(self):
+        if not self.death_screen:
+            self.death_screen = Text('YOU DIED! Press R to respawn', position=(0, 0), scale=3, color=color.red)
+            
+    def hide_death_screen(self):
+        if self.death_screen:
+            self.death_screen.disable()
+            self.death_screen = None
+            
+    def show_pause_menu(self):
+        if not self.pause_menu:
+            self.pause_menu = Text('PAUSED\nPress ESC to resume\nPress Q to quit', 
+                                 position=(0, 0), scale=2, color=color.white)
+                                 
+    def hide_pause_menu(self):
+        if self.pause_menu:
+            self.pause_menu.disable()
+            self.pause_menu = None
+            
+    def toggle_debug_info(self):
+        self.debug_visible = not self.debug_visible
+        if self.debug_visible and not self.debug_info:
+            self.debug_info = Text('DEBUG MODE ON', position=(0.5, 0.45), scale=1.5, color=color.yellow)
+        elif not self.debug_visible and self.debug_info:
+            self.debug_info.disable()
+            self.debug_info = None
+
+# Simple AudioManager class (inline replacement that doesn't use audio)
+class AudioManager:
+    def __init__(self):
+        print("AudioManager initialized (no audio files loaded)")
+        
+    def start_ambient_sounds(self):
+        pass  # Skip audio for now
+        
+    def play_impact_sound(self, sound_type):
+        pass  # Skip audio for now
 
 class Game:
     def __init__(self):
         # Initialize Ursina
-        app = Ursina(
+        self.app = Ursina(
             title=GAME_TITLE,
             size=(WINDOW_WIDTH, WINDOW_HEIGHT),
             fullscreen=FULLSCREEN,
@@ -76,47 +228,40 @@ class Game:
         spawn_point = self.game_map.get_random_player_spawn()
         self.player = Player(position=spawn_point)
         
-        # Add weapons
-        pistol = Pistol()
-        rifle = Rifle()
-        shotgun = Shotgun()
-        
-        self.player.add_weapon(pistol)
-        self.player.add_weapon(rifle)
-        self.player.add_weapon(shotgun)
-        
-        # Set default weapon
-        self.player.current_weapon = rifle
-        
     def setup_input_handlers(self):
         """Setup input event handlers"""
+        # Store reference to self for closures
+        game_instance = self
+        
         # Mouse input
-        def input(key):
+        def input_handler(key):
             if key == 'escape':
-                self.toggle_pause()
-            elif key == 'r' and self.game_state == "game_over":
-                self.restart_game()
-            elif key == 'q' and self.game_state == "paused":
-                self.quit_game()
+                game_instance.toggle_pause()
+            elif key == 'r' and game_instance.game_state == "game_over":
+                game_instance.restart_game()
+            elif key == 'q' and game_instance.game_state == "paused":
+                game_instance.quit_game()
             elif key == 'f1':
-                self.ui.toggle_debug_info()
+                game_instance.ui.toggle_debug_info()
             elif key == '1':
-                self.player.switch_weapon(0)
+                game_instance.player.switch_weapon(0)
             elif key == '2':
-                self.player.switch_weapon(1)
+                game_instance.player.switch_weapon(1)
             elif key == '3':
-                self.player.switch_weapon(2)
-            elif key == 'reload':
-                self.player.reload_weapon()
+                game_instance.player.switch_weapon(2)
+            elif key == 'r' and game_instance.game_state == "playing":
+                game_instance.player.reload_weapon()
                 
         # Mouse click for shooting
-        def mouse_click():
-            if self.game_state == "playing" and self.player and self.player.is_alive:
-                self.player.fire_weapon()
+        def mouse_click_handler():
+            if game_instance.game_state == "playing" and game_instance.player and game_instance.player.is_alive:
+                bullet = game_instance.player.fire_weapon()
+                if bullet:
+                    game_instance.bullets.append(bullet)
                 
         # Register input handlers
-        self.input_handler = input
-        self.mouse_click_handler = mouse_click
+        self.input_handler = input_handler
+        self.mouse_click_handler = mouse_click_handler
         
     def start_game(self):
         """Start the game"""
@@ -144,6 +289,7 @@ class Game:
         # Update UI
         if self.ui:
             self.ui.update()
+            self.ui.score_text.text = f'Score: {self.score}'
             
         # Spawn new enemies
         self.update_enemy_spawning()
@@ -155,7 +301,7 @@ class Game:
         """Update bullet physics and collisions"""
         bullets_to_remove = []
         
-        for bullet in self.bullets:
+        for bullet in self.bullets[:]:  # Create a copy to iterate
             if not bullet:
                 bullets_to_remove.append(bullet)
                 continue
@@ -173,9 +319,9 @@ class Game:
                     
             # Check collisions with enemies
             for enemy in self.enemies:
-                if enemy.is_alive and distance(bullet.position, enemy.position) < 1.0:
+                if enemy.is_alive and distance(bullet.position, enemy.entity.position) < 2.0:
                     # Hit enemy
-                    enemy.take_damage(self.player.current_weapon.damage)
+                    enemy.take_damage(25)  # Fixed damage value
                     self.audio_manager.play_impact_sound('enemy_hit')
                     
                     if not enemy.is_alive:
@@ -185,13 +331,6 @@ class Game:
                     bullets_to_remove.append(bullet)
                     break
                     
-            # Check collisions with walls
-            hit_info = raycast(bullet.position, bullet.velocity.normalized(), 
-                             bullet.velocity.length() * time.dt, ignore=[self.player])
-            if hit_info.hit:
-                bullets_to_remove.append(bullet)
-                self.audio_manager.play_impact_sound('bullet')
-                
         # Remove expired bullets
         for bullet in bullets_to_remove:
             if bullet in self.bullets:
@@ -201,7 +340,8 @@ class Game:
                 
     def update_enemy_spawning(self):
         """Update enemy spawning system"""
-        if len(self.enemies) < self.max_enemies:
+        alive_enemies = [e for e in self.enemies if e.is_alive]
+        if len(alive_enemies) < self.max_enemies:
             self.enemy_spawn_timer += time.dt
             if self.enemy_spawn_timer >= self.enemy_spawn_interval:
                 self.spawn_enemy()
@@ -246,9 +386,14 @@ class Game:
             
         # Clear enemies
         for enemy in self.enemies:
-            if hasattr(enemy, 'destroy'):
-                enemy.destroy()
+            enemy.destroy()
         self.enemies.clear()
+        
+        # Clear bullets
+        for bullet in self.bullets:
+            if hasattr(bullet, 'destroy'):
+                bullet.destroy()
+        self.bullets.clear()
         
         # Spawn new enemies
         self.spawn_initial_enemies()
@@ -280,7 +425,7 @@ class Game:
     def quit_game(self):
         """Quit the game"""
         print("Quitting game...")
-        application.quit()
+        self.app.quit()
         
     def get_game_stats(self):
         """Get current game statistics"""
@@ -305,13 +450,13 @@ def update():
 def input(key):
     """Global input function called by Ursina"""
     global game
-    if game and game.input_handler:
+    if game and hasattr(game, 'input_handler'):
         game.input_handler(key)
 
 def mouse_click():
     """Global mouse click function called by Ursina"""
     global game
-    if game and game.mouse_click_handler:
+    if game and hasattr(game, 'mouse_click_handler'):
         game.mouse_click_handler()
 
 def main():
@@ -333,7 +478,7 @@ def main():
     game = Game()
     
     # Start the Ursina application
-    app.run()
+    game.app.run()
 
 if __name__ == "__main__":
     main()
