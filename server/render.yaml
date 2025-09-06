@@ -1,0 +1,50 @@
+# Render.com deployment configuration
+services:
+  - type: web
+    name: 3d-shooter-multiplayer-server
+    env: node
+    plan: starter
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: HOST
+        value: 0.0.0.0
+      - key: MAX_PLAYERS_PER_ROOM
+        value: 8
+      - key: MAX_ROOMS
+        value: 10
+      - key: GAME_TICK_RATE
+        value: 60
+      - key: MAP_SIZE
+        value: 50
+      - key: JWT_SECRET
+        generateValue: true
+      - key: BCRYPT_ROUNDS
+        value: 12
+      - key: RATE_LIMIT_WINDOW_MS
+        value: 900000
+      - key: RATE_LIMIT_MAX_REQUESTS
+        value: 100
+      - key: USE_REDIS
+        value: false
+      - key: USE_DATABASE
+        value: false
+      - key: LOG_LEVEL
+        value: info
+      - key: CORS_ORIGIN
+        value: "*"
+      - key: CORS_CREDENTIALS
+        value: true
+      - key: MAX_MOVEMENT_SPEED
+        value: 10
+      - key: MAX_SHOOTING_RATE
+        value: 10
+      - key: VALIDATION_INTERVAL
+        value: 100
+    healthCheckPath: /health
+    autoDeploy: true
+    branch: main

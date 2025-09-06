@@ -1,0 +1,4 @@
+ursina>=5.0.0
+numpy>=1.21.0
+pymunk>=6.0.0
+pydub>=0.25.1
