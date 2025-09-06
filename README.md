@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 3D Shooter Game Project
 
 This project contains both a Python 3D shooter game using Ursina engine and a Node.js multiplayer server for Render.com deployment.
@@ -56,3 +57,6 @@ game/
 - Room/lobby system
 - Anti-cheat validation
 - Optimized for Render.com deployment
+=======
+# lelelel
+>>>>>>> 7b6604799a7c15f1d82b888b4274e60633af931c
